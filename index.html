@@ -1,0 +1,26 @@
+<html>
+<head id="head">
+<script src="mvc.js"></script>
+<script>
+
+var context = {
+	data : 'posts.json',
+	view : 'posts.view.js',
+	id : 'main'
+};
+
+var context2 = {
+	data : null, /* Data is injected into here by the view posts */
+	view : 'post.view.js',
+	id   : 'post'
+};
+
+window.onload = function(){
+	compile(context);
+}
+
+</script>
+</head>
+<body id="body">
+</body>
+</html>
