@@ -1,22 +1,47 @@
 <html>
 <head id="head">
 <script src="mvc.js"></script>
+<script src="uri.js"></script>
 <script>
 
-var context = {
+var context  = {
 	data : 'posts.json',
 	view : 'posts.view.js',
-	id : 'main'
+	id   : 'main'
 };
 
 var context2 = {
-	data : null, /* Data is injected into here by the view posts */
+	data : 'posts.json' ,
 	view : 'post.view.js',
 	id   : 'post'
 };
 
 window.onload = function(){
+	var dec = decompose(document.URL);
+
+	if(dec.pars){		
+		context2.redutor = {
+			init : null,
+			redutor : function(res, item){
+							if(item.id == dec.pars.post_id){ 
+								return item; 
+							} 
+							return res; 
+						}
+		};
+		compile(context2);
+		return;
+	}
+
 	compile(context);
+}
+
+window.onpopstate = function(event){
+	console.log('onpopstate');
+	if(event.state){
+		console.log('clean compile ...');
+		cleanCompile(event.state);	
+	}
 }
 
 </script>

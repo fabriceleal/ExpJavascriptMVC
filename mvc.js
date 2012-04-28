@@ -77,29 +77,50 @@ var rec_compiling = function (tree){
 };
 
 // Compiles a context (data and view) into html, inject into body
-var compile = function(ctx){
-	if(ctx.data == null){
-		console.error('compile error: no data in ctx');
-		return;
+var cleanCompile = function(ctx){
+	if(!ctx){
+		console.error('compile error: no ctx');
+		return false;
 	}
 	
-	var get_data_wrapper = null;
+	if(ctx.data == null){
+		console.error('compile error: no data in ctx');
+		return false;
+	}
+
 	
+
+	// Dummy wrapper, no reduce
+	var redutor_data_wrapper = function(data, callback){ 
+		callback(data); 
+	};	
+	if(ctx.redutor){
+		// Wrapper with reduce
+		redutor_data_wrapper = function(data, callback){
+			callback(data.reduce(
+								ctx.redutor.redutor,
+								ctx.redutor.init));
+		};
+	}
+	
+	// Data cached; make a dummy wrapper
+	var get_data_wrapper = function(data, callback){
+		redutor_data_wrapper(data, callback);
+	};	
 	if(typeof ctx.data == "string"){
 		// Assume that data is a json url; fetch it!
 		// use get_data, normally
 		get_data_wrapper = function(url, callback){  
 			get_data(url, function(raw){
-				callback(JSON.parse(raw));
+				(function(data){
+
+					redutor_data_wrapper(data, callback);
+
+				})(JSON.parse(raw));				
 			});
 		}; 
-	}else{
-		// Data cached; make a dummy wrapper
-		get_data_wrapper = function(data, callback){
-			callback(data);
-		};
 	}
-
+	
 	get_data_wrapper(ctx.data, function(data){
 		console.log('I have data!');
 
@@ -117,21 +138,26 @@ var compile = function(ctx){
 				callback(data);
 			};
 		}
-		
+
 		get_data_wrapper(ctx.view, function(meta_tree){
 			console.log('I have meta-tree!');
 
 			// Compile the meta-tree to a tree
 			compiled = rec_walking(meta_tree, data);
 			console.log('Tree ok!');
-			
+
 			// Compile tree to html, and inject in body
 			var body = document.getElementById('body');
 			while(body.childNodes.length > 0){
 				body.removeChild(body.childNodes[0]);
 			}
-			body.appendChild(rec_compiling(compiled));
+			body.appendChild(rec_compiling(compiled));			
 		});
-		
+
 	})
+}
+
+var compile = function(ctx){
+	cleanCompile(ctx);
+	//history.pushState(ctx, "", "#");
 }
