@@ -38,7 +38,7 @@ var rec_walking = function(meta, data){
 
 
 // Compiles tree into HTML
-var rec_compiling = function (tree){
+var rec_compiling = function (tree, ctx){
 	if(tree){
 		if(typeof tree != "object"){
 			
@@ -51,21 +51,38 @@ var rec_compiling = function (tree){
 					
 			var node = document.createElement(tree.tag);
 			
+			if(tree.id){
+				node.id = tree.id;
+			}
+			
 			if(tree.tag == 'a'){
 				if(tree.onclick) node.onclick = tree.onclick;
 				if(tree.href) node.href = tree.href; 
 			}
 			
+			if(tree.defered){
+				// This node will need to load data and to compile itself
+				// Create a new context for loading this node.
+				// TODO: ...
+				var localContext = {
+					data : ctx.defered_root + tree.object_id + '.json',
+					view : ctx.arrived_view,
+					id : 'nanana'
+				};
+				
+				cleanCompileWithContainer(localContext, node);
+			}
+			
 			if(tree.inner){
 				if(tree.inner.constructor == Array){
 					tree.inner.forEach(function(item){
-						var toapp = rec_compiling(item);
+						var toapp = rec_compiling(item, ctx);
 						if(toapp) node.appendChild(toapp);
 					});
 				}
 				else
 				{
-					var toapp = rec_compiling(tree.inner);
+					var toapp = rec_compiling(tree.inner, ctx);
 					if(toapp) node.appendChild(toapp);
 				}
 			}						
@@ -77,7 +94,7 @@ var rec_compiling = function (tree){
 };
 
 // Compiles a context (data and view) into html, inject into body
-var cleanCompile = function(ctx){
+var cleanCompileWithContainer = function(ctx, container){
 	if(!ctx){
 		console.error('compile error: no ctx');
 		return false;
@@ -146,18 +163,25 @@ var cleanCompile = function(ctx){
 			compiled = rec_walking(meta_tree, data);
 			console.log('Tree ok!');
 
-			// Compile tree to html, and inject in body
-			var body = document.getElementById('body');
-			while(body.childNodes.length > 0){
-				body.removeChild(body.childNodes[0]);
+			// Compile tree to html, and inject in container			
+			while(container.childNodes.length > 0){
+				container.removeChild(container.childNodes[0]);
 			}
-			body.appendChild(rec_compiling(compiled));			
+			container.appendChild(rec_compiling(compiled, ctx));	
 		});
 
 	})
 }
 
-var compile = function(ctx){
-	cleanCompile(ctx);
+var cleanCompile = function(ctx){
+	cleanCompileWithContainer(ctx, document.getElementById('body'));
+}
+
+var compileWithContainer = function(ctx, container){
+	cleanCompileWithContainer(ctx, container);
 	//history.pushState(ctx, "", "#");
+}
+
+var compile = function(ctx){
+	compileWithContainer(ctx, document.getElementById('body'));
 }

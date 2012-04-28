@@ -16,7 +16,19 @@ var context2 = {
 	id   : 'post'
 };
 
+var context_defered = {
+	data : 'users/users.defered.json',
+	view : 'users/users.defered.view.js',
+
+	defered_root : 'users/',
+	arrived_view : 'users/users.arrived.view.js',
+	
+	id : 'users'
+};
+
 window.onload = function(){
+	compile(context_defered);
+/*
 	var dec = decompose(document.URL);
 
 	// Compile view for a post
@@ -36,6 +48,7 @@ window.onload = function(){
 
 	// Compile view for listing posts
 	compile(context);
+	*/
 }
 
 window.onpopstate = function(event){
