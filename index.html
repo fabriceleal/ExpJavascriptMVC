@@ -19,6 +19,7 @@ var context2 = {
 window.onload = function(){
 	var dec = decompose(document.URL);
 
+	// Compile view for a post
 	if(dec.pars){		
 		context2.redutor = {
 			init : null,
@@ -33,6 +34,7 @@ window.onload = function(){
 		return;
 	}
 
+	// Compile view for listing posts
 	compile(context);
 }
 
