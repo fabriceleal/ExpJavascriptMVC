@@ -38,6 +38,8 @@ var rec_walking = function(meta, data){
 
 
 // Compiles tree into HTML
+// The context will be needed for defered data, 
+// that implies asyncronous compilation
 var rec_compiling = function (tree, ctx){
 	if(tree){
 		if(typeof tree != "object"){
@@ -69,7 +71,7 @@ var rec_compiling = function (tree, ctx){
 					view : ctx.arrived_view,
 					id : 'nanana'
 				};
-				
+
 				cleanCompileWithContainer(localContext, node);
 			}
 			

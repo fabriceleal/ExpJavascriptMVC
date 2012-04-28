@@ -3,6 +3,7 @@
 	"merge_with_container" : true,
 	"inner" : [
 		"Data arrived asynchronously!!!",
+		function(user){ return user.id; },
 		function(user){ return user.name; },
 		{
 			"tag"  : "a",
