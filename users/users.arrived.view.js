@@ -6,9 +6,9 @@
 		function(user){ return user.id; },
 		function(user){ return user.name; },
 		{
-			"tag"  : "a",
-			"href" : function(user){ return user.url; },
-			"inner": function(user){ return user.url; },
+			"tag"  : 'a',
+			"href" : function(user){ return user.url; } ,
+			"inner": function(user){ return user.url; }
 		}
 	]
 }

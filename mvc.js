@@ -26,10 +26,14 @@ var rec_walking = function(meta, data){
 		}
 		
 		if(typeof meta == "object"){
-			return ({
-				tag   : meta.tag,
-				inner : rec_walking(meta.inner, data)
-			});
+			// Run through all the attributes!
+			var ret = {};
+			for(var att in meta){
+				console.log(att);
+				console.log(meta[att]);
+				ret[att] = rec_walking(meta[att], data);
+			}
+			return ret;
 		}
 	}
 
@@ -65,7 +69,6 @@ var rec_compiling = function (tree, ctx){
 			if(tree.defered){
 				// This node will need to load data and to compile itself
 				// Create a new context for loading this node.
-				// TODO: ...
 				var localContext = {
 					data : ctx.defered_root + tree.object_id + '.json',
 					view : ctx.arrived_view,
@@ -84,8 +87,13 @@ var rec_compiling = function (tree, ctx){
 				}
 				else
 				{
-					var toapp = rec_compiling(tree.inner, ctx);
-					if(toapp) node.appendChild(toapp);
+					if(typeof tree.inner == "string"){
+						// No need to create a <p> tag!
+						node.innerText = tree.inner;
+					}else{
+						var toapp = rec_compiling(tree.inner, ctx);
+						if(toapp) node.appendChild(toapp);
+					}
 				}
 			}						
 			return node;
@@ -106,8 +114,6 @@ var cleanCompileWithContainer = function(ctx, container){
 		console.error('compile error: no data in ctx');
 		return false;
 	}
-
-	
 
 	// Dummy wrapper, no reduce
 	var redutor_data_wrapper = function(data, callback){ 
