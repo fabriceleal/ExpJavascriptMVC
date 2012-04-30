@@ -1,15 +1,3 @@
-// Little Helper for AJAX
-function get_data(url, callback){
-	var req = new XMLHttpRequest();
-	req.open('GET', url, true);
-	req.onreadystatechange = function(state){
-		if(req.readyState != 4) return;
-		
-		callback(req.responseText);
-	};
-	req.send(null);
-}
-
 
 // Compiles Meta-tree into Tree
 var rec_walking = function(meta, data){
@@ -122,26 +110,18 @@ var cleanCompileWithContainer = function(ctx, container){
 	if(ctx.redutor){
 		// Wrapper with reduce
 		redutor_data_wrapper = function(data, callback){
-			callback(data.reduce(
-								ctx.redutor.redutor,
-								ctx.redutor.init));
+			callback(data.reduce(ctx.redutor.redutor, ctx.redutor.init));
 		};
 	}
 	
 	// Data cached; make a dummy wrapper
-	var get_data_wrapper = function(data, callback){
-		redutor_data_wrapper(data, callback);
-	};	
+	var get_data_wrapper = redutor_data_wrapper;	
+
 	if(typeof ctx.data == "string"){
 		// Assume that data is a json url; fetch it!
-		// use get_data, normally
 		get_data_wrapper = function(url, callback){  
-			get_data(url, function(raw){
-				(function(data){
-
-					redutor_data_wrapper(data, callback);
-
-				})(JSON.parse(raw));				
+			getData(url, function(cmpld){
+				redutor_data_wrapper(cmpld, callback);
 			});
 		}; 
 	}
@@ -151,13 +131,7 @@ var cleanCompileWithContainer = function(ctx, container){
 
 		// Load view. Use the same approach.
 		if(typeof ctx.view == "string"){
-			get_data_wrapper = function(url, callback){
-				get_data(url, function(raw){
-					// Compile the view to a meta-tree
-					raw = eval('(function(){ return (' + raw +');})()');
-					callback(raw);
-				});
-			};
+			get_data_wrapper = getData;
 		}else{
 			get_data_wrapper = function(data, callback){
 				callback(data);
@@ -168,7 +142,7 @@ var cleanCompileWithContainer = function(ctx, container){
 			console.log('I have meta-tree!');
 
 			// Compile the meta-tree to a tree
-			compiled = rec_walking(meta_tree, data);
+			var compiled = rec_walking(meta_tree, data);
 			console.log('Tree ok!');
 
 			// Compile tree to html, and inject in container			
