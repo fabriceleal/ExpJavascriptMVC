@@ -1,0 +1,15 @@
+{
+	"title"    : 	"Chart 1",
+
+	"div_id"   : 	"chart_div_1",
+
+	"data"     :  	{
+						"table" : "charts_data",
+						"id"	: "1"
+					},
+
+	"draw" 	   : 	{
+						"table" : "charts_draw",
+						"id"    : "pie"
+					}
+}
