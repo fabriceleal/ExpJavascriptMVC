@@ -70,9 +70,9 @@ function getDataEntityRaw(table, id, callback){
  */ 
 function getData(url, callback){
 	getDataRaw(url, function(data){
-		console.log('getData: has data!');
+		//console.log('getData: has data!');
 		compileData(data, getMethodByUrl(url), function(compiled){
-			console.log('compileData: has compiled data!');
+			//console.log('compileData: has compiled data!');
 			callback(compiled);
 		});
 	});
@@ -107,7 +107,7 @@ function compileData(data, method, callback){
 			}
 
 			// "Return" whatever was compiled.
-			console.log(compiled);
+			//console.log(compiled);
 			
 			callback(compiled);			
 		},
@@ -128,7 +128,7 @@ function compileData(data, method, callback){
 			}
 			
 			// "Return" whatever was compiled.
-			console.log(compiled);
+			//console.log(compiled);
 			
 			callback(compiled);
 		}
@@ -136,11 +136,11 @@ function compileData(data, method, callback){
 
 	if (compiles[method]){
 		// If compilation is supported, compile and call callback
-		
+
 		compiles[method](data, function(compiled){
 			callback(compiled);
 		});
-		
+
 	}else{
 		throw Error("Unsupported compileData method: " + method);
 	}

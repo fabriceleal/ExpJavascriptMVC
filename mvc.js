@@ -17,8 +17,6 @@ var rec_walking = function(meta, data){
 			// Run through all the attributes!
 			var ret = {};
 			for(var att in meta){
-				console.log(att);
-				console.log(meta[att]);
 				ret[att] = rec_walking(meta[att], data);
 			}
 			return ret;
@@ -40,7 +38,7 @@ var rec_compiling = function (tree, ctx){
 			var node = document.createElement('p');
 			node.innerText = tree;
 			return node;
-			
+
 		}else if(tree.tag){
 					
 			var node = document.createElement(tree.tag);
@@ -79,6 +77,7 @@ var rec_compiling = function (tree, ctx){
 						// No need to create a <p> tag!
 						node.innerText = tree.inner;
 					}else{
+						// tree.inner it's an arbitrary object
 						var toapp = rec_compiling(tree.inner, ctx);
 						if(toapp) node.appendChild(toapp);
 					}
@@ -127,7 +126,7 @@ var cleanCompileWithContainer = function(ctx, container){
 	}
 	
 	get_data_wrapper(ctx.data, function(data){
-		console.log('I have data!');
+		//console.log('I have data!');
 
 		// Load view. Use the same approach.
 		if(typeof ctx.view == "string"){
@@ -139,11 +138,11 @@ var cleanCompileWithContainer = function(ctx, container){
 		}
 
 		get_data_wrapper(ctx.view, function(meta_tree){
-			console.log('I have meta-tree!');
+			//console.log('I have meta-tree!');
 
 			// Compile the meta-tree to a tree
 			var compiled = rec_walking(meta_tree, data);
-			console.log('Tree ok!');
+			//console.log('Tree ok!');
 
 			// Compile tree to html, and inject in container			
 			while(container.childNodes.length > 0){

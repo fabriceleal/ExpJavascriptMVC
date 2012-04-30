@@ -5,8 +5,9 @@
 					
 					// Load draw function
 					draw = function(obj){
-						return chart.draw;
+						return true;
 					};
+					//...
 					
 					// Run draw function
 					draw(chart);					
