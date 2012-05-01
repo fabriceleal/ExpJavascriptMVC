@@ -1,4 +1,6 @@
-// Functions for caching and downloading data
+/*
+	Functions for downloading and compiling data (.js or .json).
+*/
 
 /*
  * Downloads from an arbitrary url.

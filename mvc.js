@@ -1,3 +1,7 @@
+/*
+	Compilation (meta-tree -> tree and tree -> HTML).
+*/
+
 // TODO: walking_rules is intended to be "patchable".
 // TODO: walking_rules should be changed to a priority-sorted array (higher first).
 

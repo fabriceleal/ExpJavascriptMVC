@@ -1,3 +1,7 @@
+/*
+	Extensions to Javascript Objects.
+*/
+
 
 /**
  * Returns the first element that respects an arbitrary predicate, or null if it doesn't finds one.
