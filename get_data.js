@@ -41,6 +41,7 @@ function getDataEntityRaw(table, id, callback){
 	var called = false;
 	
 	// How to see if its .json or .js ??? Try both :-| ...	
+	// Only allow one to be successfull though!
 	
 	getDataRaw(url + ".js", function(data){
 		if(called){

@@ -1,35 +1,98 @@
+// This is intended to be "patchable"
+var walking_rules = [
+	/*
+	{
+		cond :   (meta-object)		=> bool
+		transf : (meta-object, data)=> compiled-tree
+	},
+	*/
 
-// Compiles Meta-tree into Tree
-var rec_walking = function(meta, data){
+	{
+		cond   : 	function(lbd_meta){ return typeof lbd_meta == "function"; },
+		transf : 	function(lbd_meta, lbd_data) {
+						var res = lbd_meta(lbd_data);
+
+						// Apply compilation to the result-of-the-function itself 
+						// (ie, do not assume that is always a string ...)
+						
+						// This will handle functions that return functions ;)
+						return rec_walking(res, lbd_data);
+					}
+	},
+	{
+		cond   : 	function(lbd_meta){ return lbd_meta.constructor == Array; },
+		transf : 	function(lbd_meta, lbd_data){
+						return lbd_meta.map(function(lbd_elem){
+							return rec_walking(lbd_elem, lbd_data);
+						});
+					}
+	},
+	{
+		cond   : 	function(lbd_meta){ return typeof lbd_meta == "object"; },
+		transf : 	function(lbd_meta, lbd_data){
+						// Run through all the attributes! Create new object.
+						var ret = {};
+						for(var att in lbd_meta){
+							ret[att] = rec_walking(lbd_meta[att], lbd_data);
+						}
+						return ret;
+					}
+	}
+];
+ 
+ /* 
+ * Compiles a meta-tree into a tree
+ * All the functions in the "meta-tree" are executed with data as the single argument.
+ * The final "tree" should contain only objects or strings.
+ *
+ * Synchronous
+ */
+ var rec_walking = function(meta, data){
 	if(meta){
 	
-		if(typeof meta == "function"){
-			return meta(data);
-		}
+		// TODO: Move all this to an exterior file, append to the prototype of Array
 
-		if(meta.constructor == Array){
-			return meta.map(function(elem){
-				return rec_walking(elem, data);
-			});
-		}
+		var firstOrNull = walking_rules.filter(
+				(function(){
+					// Set to false as soon as it finds a matching rule
+					var first = true;
+
+					//Return function with closured var first
+					return function(rule){
+						// If already found one elem, stops testing conds and returns always false
+						if(!first) return false;
+						
+						// If doesn't have a rule yet, test conds; return true as soon as it finds one
+						if(rule.cond(meta)){
+							first = false;
+							return true;
+						}
+						
+						// returns false if all fails
+						return false;
+					}
+				})());
+		// ---
 		
-		if(typeof meta == "object"){
-			// Run through all the attributes!
-			var ret = {};
-			for(var att in meta){
-				ret[att] = rec_walking(meta[att], data);
-			}
-			return ret;
+		firstOrNull = firstOrNull && firstOrNull[0] ? firstOrNull[0] : null;
+
+		if(firstOrNull){
+			return firstOrNull.transf(meta, data);
 		}
 	}
+	
+	// With the default rules, will reach this point nulls, strings and numbers.
 
 	return meta;
 };
 
-
-// Compiles tree into HTML
-// The context will be needed for defered data, 
-// that implies asyncronous compilation
+/*
+ * Compiles a tree into HTML
+ * The context will be needed for defered data, 
+ * that implies asyncronous compilation.
+ *
+ * Synchronous. A defered ctx will lead to compilation of the follow-up ctx.
+ */
 var rec_compiling = function (tree, ctx){
 	if(tree){
 		if(typeof tree != "object"){
@@ -90,7 +153,9 @@ var rec_compiling = function (tree, ctx){
 	return null;
 };
 
-// Compiles a context (data and view) into html, inject into body
+/*
+ * Compiles a context (data and view) into html, inject into body.
+ */
 var cleanCompileWithContainer = function(ctx, container){
 	if(!ctx){
 		console.error('compile error: no ctx');
