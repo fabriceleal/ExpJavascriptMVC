@@ -26,6 +26,10 @@ var walking_rules = [
 						// (ie, do not assume that is always a string ...)
 						
 						// This will handle functions that return functions ;)
+						
+						// TODO: However, one interesting alternative approach is to leave these functions as is,
+						// TODO: And expand them at compile-time, not expansion-time.
+						// TODO: Another approach is to create a new Object, only for that.
 						return rec_walking(res, lbd_data);
 					}
 	},
