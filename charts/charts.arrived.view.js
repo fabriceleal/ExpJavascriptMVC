@@ -1,11 +1,11 @@
 {
-	"tag" 	: 	"div",
+	"behaviour"	: 	"fusion",
 
 	"inner" : 	function(chart) {
 
 					// Load draw function
 					draw = function(obj){
-						return true;
+						document.getElementById(chart.div_id).innerText = 'Hello ' + chart.div_id;
 					};
 					//...
 

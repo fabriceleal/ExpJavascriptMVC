@@ -86,27 +86,50 @@ var walking_rules = [
  */
 var rec_compiling = function (tree, ctx){
 	if(tree){
-		if(typeof tree != "object"){
+		if(tree.constructor == Array){
+			
+			// Return an array of the compilation of the items in the array
+			// Nested arrays will be troublesome :|
+			return tree.map(
+					function(item){
+						// A little check ...
+						if(item && item.constructor && item.constructor == Array){
+							console.warn('Nested arrays, prepare yourself for nasty htmls!');
+						}
+
+						return rec_compiling(item, ctx);
+					});
+			//--
+			
+		}else if(typeof tree != "object"){
 			
 			// For strings, numbers, create a p and put the content inside :P
+			
+			// This is for lone strings. When an actual tag has as its inner property a string,
+			// It should put the string in there as is, without <p>
+			
 			var node = document.createElement('p');
-			node.innerText = tree;
+			with(node){
+				innerText = tree;
+			}
 			return node;
-
+			
 		}else if(tree.tag){
 					
 			var node = document.createElement(tree.tag);
-			
+
+			// TODO: Drop this! transfer all relevant atributes!
 			if(tree.id){
 				node.id = tree.id;
 			}
-			
+
 			// TODO: Drop this! transfer all relevant atributes!
 			if(tree.tag == 'a'){
 				if(tree.onclick) node.onclick = tree.onclick;
 				if(tree.href) node.href = tree.href; 
 			}
 			
+			// TODO: Defered contexts .... any way better than this one?
 			if(tree.defered){
 				// This node will need to load data and to compile itself
 				// Create a new context for loading this node.
@@ -119,17 +142,19 @@ var rec_compiling = function (tree, ctx){
 				cleanCompileWithContainer(localContext, node);
 			}
 			
+			// Compile inner.
 			if(tree.inner){
 				if(tree.inner.constructor == Array){
-					tree.inner.forEach(function(item){
-						var toapp = rec_compiling(item, ctx);
-						if(toapp) node.appendChild(toapp);
+
+					rec_compiling(tree.inner, ctx).forEach(function (compiled){
+						if(compiled) node.appendChild(compiled);
 					});
+
 				}
 				else
 				{
 					if(typeof tree.inner == "string"){
-						// No need to create a <p> tag!
+						// No need to create a <p> tag! Do not call recursively!
 						node.innerText = tree.inner;
 					}else{
 						// tree.inner it's an arbitrary object
@@ -139,6 +164,13 @@ var rec_compiling = function (tree, ctx){
 				}
 			}						
 			return node;
+		}else if(tree.behaviour){
+			if(tree.behaviour == "fusion"){
+				// This won't create a node for the tree itself;
+				// it will return the compilation of the inner instead.
+
+				return "Not implemented yet";
+			}
 		}
 	}
 	
@@ -196,11 +228,25 @@ var cleanCompileWithContainer = function(ctx, container){
 			// Compile the meta-tree to a tree
 			var compiled = rec_walking(meta_tree, data);
 
-			// Compile tree to html, and inject in container			
+			// Remove all childs of the container
 			while(container.childNodes.length > 0){
 				container.removeChild(container.childNodes[0]);
 			}
-			container.appendChild(rec_compiling(compiled, ctx));	
+
+			// Compile the tree into HTML
+			var res = rec_compiling(compiled, ctx);
+			if(res){				
+				if(res.constructor == Array){
+					// If res is an array, append all the elements as nodes					
+					res.forEach(function(res_child){
+						container.appendChild(res_child);
+					});
+				}else{
+					// Append res as a single node
+					container.appendChild(res);
+				}
+			}
+
 		});
 	})
 }
