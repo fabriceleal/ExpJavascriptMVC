@@ -62,32 +62,7 @@ var walking_rules = [
  */
  var rec_walking = function(meta, data){
 	if(meta){
-	
-		// TODO: Move all this to an exterior file, append to the prototype of Array
-
-		var firstOrNull = walking_rules.filter(
-				(function(){
-					// Set to false as soon as it finds a matching rule
-					var first = true;
-
-					//Return function with closured var first
-					return function(rule){
-						// If already found one elem, stops testing conds and returns always false
-						if(!first) return false;
-						
-						// If doesn't have a rule yet, test conds; return true as soon as it finds one
-						if(rule.cond(meta)){
-							first = false;
-							return true;
-						}
-						
-						// returns false if all fails
-						return false;
-					}
-				})());
-		// ---
-		
-		firstOrNull = firstOrNull && firstOrNull[0] ? firstOrNull[0] : null;
+		var firstOrNull = walking_rules.firstOrNull(function(rule){ return rule.cond(meta); });
 
 		if(firstOrNull){
 			return firstOrNull.transf(meta, data);
