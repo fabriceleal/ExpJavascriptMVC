@@ -42,7 +42,7 @@ var walking_rules = [
 						});
 					}
 	},
-	
+
 	/*
 		Expantion rules for "special" tags should be put here
 	*/
@@ -210,6 +210,7 @@ var rec_compiling = function (tree, ctx){
 
 			// Compile inner.
 			if(tree.inner){
+
 				if(tree.inner.constructor == Array){
 
 					rec_compiling(tree.inner, ctx).forEach(function (compiled){
@@ -318,9 +319,8 @@ var cleanCompileWithContainer = function(ctx, container){
 			var res = rec_compiling(compiled, ctx);
 			
 			// TODO: After compile event here
-			
-			if(res){	
-				
+
+			if(res){
 				allOfYouDo(
 						res, 
 						function(node){
@@ -334,8 +334,7 @@ var cleanCompileWithContainer = function(ctx, container){
 						compiled , 
 						function(n){ return n.inner; }, 
 						function(n){ return n.compilation_afterAppend; } );
-				//---
-				
+				//---				
 			}
 
 		});

@@ -150,7 +150,6 @@ function compileData(data, method, callback){
 }
 
 
-
 // Small cache class
 function Cache(){
 	this.cached = {};

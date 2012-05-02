@@ -27,7 +27,8 @@ Array.prototype.firstOrNull = function(predicate){
 						return false;
 					}
 				})());
-	
+	//---
+
 	return tmp && tmp[0] ? tmp[0] : null;
 }
 
