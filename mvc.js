@@ -54,13 +54,19 @@ var walking_rules = [
 						// Run through all the attributes! Create new object.
 						var ret = {};
 						for(var att in lbd_meta){
-							ret[att] = rec_walking(lbd_meta[att], lbd_data);
+							if(["compilation_afterAppend"  /*, ... */].contains(att)){
+								// "Special" atts. These may include functions that are exec'ed only
+								// during compilation / after appending into HTML. They are copied "as-is"
+								ret[att] = lbd_meta[att];
+							}else{
+								ret[att] = rec_walking(lbd_meta[att], lbd_data);
+							}
 						}
 						return ret;
 					}
 	}
 ];
- 
+
  /* 
  * Compiles a meta-tree into a tree
  * All the functions in the "meta-tree" are executed with data as the single argument.
@@ -80,6 +86,62 @@ var walking_rules = [
 	// With the default rules, will reach this point nulls, strings and numbers.
 	return meta;
 };
+
+
+/*
+ * Execs some function on obj if it's a single object, or for each element on obj if it's an array.
+ */
+var allOfYouDo = function(obj, fun, ifNullCancel){
+/*					obj is something
+						T	F
+	ifNullCancel 	T	T	F
+					F	T	T
+*/
+	
+	// Force to bool. TODO: Until I learn about optional args :P.
+	ifNullCancel = ifNullCancel ? true : false;
+
+	if(obj || !ifNullCancel){
+
+		if(obj && obj.constructor == Array){
+			return {
+				execd : true,
+				returnValue : obj.map(function(item){
+					return allOfYouDo(item, fun);
+				})
+			};
+		}else{
+			return {
+				execd : true,
+				returnValue : fun(obj)
+			};
+		}
+
+	}
+	return { execd : false };
+}
+
+
+/*
+ * Does a recursive walk through a tree, executing execMethod with signature (currentNode) => (bool).
+ * ChildrenMethod should return an array or an object
+ * tree - the start node
+ * childrenMethod (currentNode) => (Array nodes|node)
+ * execMethod (currentNode) => ((currentNode) => (bool))
+ */
+var recursiveWalk = function(node, childrenMethod, execMethod){
+	var toExec = execMethod(node);
+	
+	if( !(toExec) || toExec(node) ){
+	
+		allOfYouDo(
+				childrenMethod(node), 
+				function(n){ return recursiveWalk(n, childrenMethod, execMethod); }, 
+				true);
+		//---
+	}
+	return true;
+}
 
 /*
  * Compiles a tree into HTML
@@ -106,20 +168,20 @@ var rec_compiling = function (tree, ctx){
 			//--
 			
 		}else if(typeof tree != "object"){
-			
+
 			// For strings, numbers, create a p and put the content inside :P
-			
+
 			// This is for lone strings. When an actual tag has as its inner property a string,
 			// It should put the string in there as is, without <p>
-			
+
 			var node = document.createElement('p');
 			with(node){
 				innerText = tree;
 			}
 			return node;
-			
+
 		}else if(tree.tag){
-					
+
 			var node = document.createElement(tree.tag);
 
 			// TODO: Drop this! transfer all relevant atributes!
@@ -132,7 +194,7 @@ var rec_compiling = function (tree, ctx){
 				if(tree.onclick) node.onclick = tree.onclick;
 				if(tree.href) node.href = tree.href; 
 			}
-			
+
 			// TODO: Defered contexts .... any way better than this one?
 			if(tree.defered){
 				// This node will need to load data and to compile itself
@@ -145,7 +207,7 @@ var rec_compiling = function (tree, ctx){
 
 				cleanCompileWithContainer(localContext, node);
 			}
-			
+
 			// Compile inner.
 			if(tree.inner){
 				if(tree.inner.constructor == Array){
@@ -173,7 +235,7 @@ var rec_compiling = function (tree, ctx){
 				// This won't create a node for the tree itself;
 				// it will return the compilation of the inner instead.
 
-				return "Not implemented yet";
+				return rec_compiling(tree.inner, ctx);  //"Not implemented yet";
 			}
 		}
 	}
@@ -232,23 +294,48 @@ var cleanCompileWithContainer = function(ctx, container){
 			// Compile the meta-tree to a tree
 			var compiled = rec_walking(meta_tree, data);
 
-			// Remove all childs of the container
-			while(container.childNodes.length > 0){
-				container.removeChild(container.childNodes[0]);
-			}
+			// Remove all childs of the container, but do it only if there is something to add!!
+			var cleanup = 
+				(function(){
+					var execd = false;
+					
+					return function(){				
+						if(execd){
+							return;
+						}
+
+						execd = true;
+						while(container.childNodes.length > 0){
+							container.removeChild(container.childNodes[0]);
+						}
+					};
+				})();
+			//--
+			
+			// TODO: Better control over compilation errors
 
 			// Compile the tree into HTML
 			var res = rec_compiling(compiled, ctx);
-			if(res){				
-				if(res.constructor == Array){
-					// If res is an array, append all the elements as nodes					
-					res.forEach(function(res_child){
-						container.appendChild(res_child);
-					});
-				}else{
-					// Append res as a single node
-					container.appendChild(res);
-				}
+			
+			// TODO: After compile event here
+			
+			if(res){	
+				
+				allOfYouDo(
+						res, 
+						function(node){
+							cleanup();
+							container.appendChild(node);
+						});
+				//---
+				
+				// afterAppend event here
+				recursiveWalk(
+						compiled , 
+						function(n){ return n.inner; }, 
+						function(n){ return n.compilation_afterAppend; } );
+				//---
+				
 			}
 
 		});
