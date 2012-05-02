@@ -30,3 +30,7 @@ Array.prototype.firstOrNull = function(predicate){
 	
 	return tmp && tmp[0] ? tmp[0] : null;
 }
+
+Array.prototype.contains = function(item){
+	return this.indexOf(item) > -1;
+}
