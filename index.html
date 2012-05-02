@@ -21,6 +21,15 @@ var context2 = {
 	id   : 'post'
 };
 
+var context3 = {
+	data: 'charts/charts.json',
+	view: 'charts/charts.defered.view.js',
+	
+	defered_root: 'charts/',
+	arrived_view: 'charts/charts.arrived.view.js',
+	id: 'charts'
+}
+
 var context_defered = {
 	// This is a list of ids
 	data : 'users/users.defered.json',
@@ -62,7 +71,9 @@ window.onload = function(){
 	compile(context);
 	*/
 
-	compile(context_defered);
+	//compile(context_defered);
+	
+	compile(context3);
 }
 
 window.onpopstate = function(event){
