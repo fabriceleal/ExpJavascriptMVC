@@ -2,12 +2,12 @@
 	"tag": "div",
 	"inner": [
 		"Fixed Text",
-		function(posts){ 
+		function(posts, ctx){ 
 			return "This is a view for all posts, there are " + posts.length + " posts"; 
 		},
 		{
 			"tag" : "div",
-			"inner": function(posts){
+			"inner": function(posts, ctx){
 				return [
 					"Table",
 					{
@@ -43,7 +43,7 @@
 										context2.data = item;
 										compile(context2);
 									},*/
-									"href" : "index.html?post_id=" + item.id
+									"href" : ctx.url.full_no_pars + "?post_id=" + item.id
 								}
 							]
 						};

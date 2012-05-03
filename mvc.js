@@ -19,8 +19,8 @@ var walking_rules = [
 	{
 		priority:	-999999999,
 		cond   : 	function(lbd_meta){ return typeof lbd_meta == "function"; },
-		transf : 	function(lbd_meta, lbd_data) {
-						var res = lbd_meta(lbd_data);
+		transf : 	function(lbd_meta, lbd_data, lbd_ctx) {
+						var res = lbd_meta(lbd_data, lbd_ctx);
 
 						// Apply compilation to the result-of-the-function itself 
 						// (ie, do not assume that is always a string ...)
@@ -30,15 +30,15 @@ var walking_rules = [
 						// TODO: However, one interesting alternative approach is to leave these functions as is,
 						// TODO: And expand them at compile-time, not expansion-time.
 						// TODO: Another approach is to create a new Object, only for that.
-						return rec_walking(res, lbd_data);
+						return rec_walking(res, lbd_data, lbd_ctx);
 					}
 	},
 	{
 		priority:	-999999998,
 		cond   : 	function(lbd_meta){ return lbd_meta.constructor == Array; },
-		transf : 	function(lbd_meta, lbd_data){
+		transf : 	function(lbd_meta, lbd_data, lbd_ctx){
 						return lbd_meta.map(function(lbd_elem){
-							return rec_walking(lbd_elem, lbd_data);
+							return rec_walking(lbd_elem, lbd_data, lbd_ctx);
 						});
 					}
 	},
@@ -50,7 +50,7 @@ var walking_rules = [
 	{
 		priority:	999999999,
 		cond   : 	function(lbd_meta){ return typeof lbd_meta == "object"; },
-		transf : 	function(lbd_meta, lbd_data){
+		transf : 	function(lbd_meta, lbd_data, lbd_ctx){
 						// Run through all the attributes! Create new object.
 						var ret = {};
 						for(var att in lbd_meta){
@@ -59,7 +59,7 @@ var walking_rules = [
 								// during compilation / after appending into HTML. They are copied "as-is"
 								ret[att] = lbd_meta[att];
 							}else{
-								ret[att] = rec_walking(lbd_meta[att], lbd_data);
+								ret[att] = rec_walking(lbd_meta[att], lbd_data, lbd_ctx);
 							}
 						}
 						return ret;
@@ -74,12 +74,12 @@ var walking_rules = [
  *
  * Synchronous
  */
- var rec_walking = function(meta, data){
+ var rec_walking = function(meta, data, ctx){
 	if(meta){
 		var firstOrNull = walking_rules.firstOrNull(function(rule){ return rule.cond(meta); });
 
 		if(firstOrNull){
-			return firstOrNull.transf(meta, data);
+			return firstOrNull.transf(meta, data, ctx);
 		}
 	}
 	
@@ -293,7 +293,7 @@ var cleanCompileWithContainer = function(ctx, container){
 
 		get_data_wrapper(ctx.view, function(meta_tree){
 			// Compile the meta-tree to a tree
-			var compiled = rec_walking(meta_tree, data);
+			var compiled = rec_walking(meta_tree, data, ctx);
 
 			// Remove all childs of the container, but do it only if there is something to add!!
 			var cleanup = 

@@ -1,25 +1,11 @@
 <html>
 <head id="head">
+<script src="jquery-1.7.2.min.js"></script>
 <script src="extensions.js"></script>
 <script src="get_data.js"></script>
 <script src="mvc.js"></script>
 <script src="uri.js"></script>
 <script>
-
-var context  = {
-	data : 'posts.json',
-	view : 'posts.view.js',
-	id   : 'main'
-};
-
-var context2 = {
-	// Check the compilation of this context. it has a redutor for 
-	// selecting the right object to show
-
-	data : 'posts.json' ,
-	view : 'post.view.js',
-	id   : 'post'
-};
 
 var context3 = {
 	data: 'charts/charts.json',
@@ -47,34 +33,9 @@ var context_defered = {
 	id : 'users'
 };
 
-window.onload = function(){
-	
-/*
-	var dec = decompose(document.URL);
-
-	// Compile view for a post
-	if(dec.pars){		
-		context2.redutor = {
-			init : null,
-			redutor : function(res, item){
-							if(item.id == dec.pars.post_id){ 
-								return item; 
-							} 
-							return res; 
-						}
-		};
-		compile(context2);
-		return;
-	}
-
-	// Compile view for listing posts
-	compile(context);
-	*/
-
-	//compile(context_defered);
-	
+$(document).ready(function(){
 	compile(context3);
-}
+});
 
 window.onpopstate = function(event){
 	//console.log('onpopstate');
