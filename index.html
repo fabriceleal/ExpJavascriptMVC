@@ -7,33 +7,20 @@
 <script src="uri.js"></script>
 <script>
 
-var context3 = {
-	data: 'charts/charts.json',
-	view: 'charts/charts.defered.view.js',
-	
-	defered_root: 'charts/',
-	arrived_view: 'charts/charts.arrived.view.js',
-	id: 'charts'
-}
+var context3 = null;
 
-var context_defered = {
-	// This is a list of ids
-	data : 'users/users.defered.json',
-	
-	// this is the skeleton grid, generated syncronously
-	view : 'users/users.defered.view.js',
-
-	// This is the root for the defered data. It's assumed
-	// that datafiles have the name: defere_root + object_id + '.json'
-	defered_root : 'users/',
-	
-	// this is the view for formatting incoming data
-	arrived_view : 'users/users.arrived.view.js',
-	
-	id : 'users'
-};
+var context_defered = null;
 
 $(document).ready(function(){
+	context3 = {
+		data: 'charts/charts.json',
+		view: 'charts/charts.defered.view.js',
+		
+		defered_root: 'charts/',
+		arrived_view: 'charts/charts.arrived.view.js',
+		id: 'charts'
+	};
+	
 	compile(context3);
 });
 

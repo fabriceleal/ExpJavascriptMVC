@@ -257,6 +257,11 @@ var cleanCompileWithContainer = function(ctx, container){
 		console.error('compile error: no data in ctx');
 		return false;
 	}
+	
+	if(!container){
+		console.error('compile error: no container');
+		return false;
+	}
 
 	// Dummy wrapper, no reduce
 	var redutor_data_wrapper = function(data, callback){ 
@@ -332,8 +337,8 @@ var cleanCompileWithContainer = function(ctx, container){
 				// afterAppend event here
 				recursiveWalk(
 						compiled , 
-						function(n){ return n.inner; }, 
-						function(n){ return n.compilation_afterAppend; } );
+						function(n){ if(n) return n.inner; return []; }, 
+						function(n){ if(n) n.compilation_afterAppend; else return null; } );
 				//---				
 			}
 
@@ -345,7 +350,7 @@ var cleanCompileWithContainer = function(ctx, container){
  * Compilation without history changing into the body of the document.
  */
 var cleanCompile = function(ctx){
-	cleanCompileWithContainer(ctx, document.getElementById('body'));
+	cleanCompileWithContainer(ctx, ctx.parent);
 }
 
 /*
@@ -362,5 +367,5 @@ var compileWithContainer = function(ctx, container){
  * Compilation with history changing into the body of the document.
  */
 var compile = function(ctx){
-	compileWithContainer(ctx, document.getElementById('body'));
+	compileWithContainer(ctx, ctx.parent);
 }

@@ -12,6 +12,6 @@ $(document).ready(function(){
 		ctx.url = parts;
 
 		// Compile
-		compileWithContainer(ctx, ctx.parent());
+		compileWithContainer(ctx, ctx.parent);
 	});
 });

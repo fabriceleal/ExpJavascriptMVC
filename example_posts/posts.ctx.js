@@ -21,7 +21,7 @@
 							}
 			},
 			
-			'parent' : function(){ return $('body')[0]; }
+			'parent' : ((function(){ return $('body')[0]; })())
 		};
 	}
 	
@@ -32,7 +32,7 @@
 		'data' : 'posts.json',
 		'view' : 'posts.view.js',
 
-		'parent' : function(){ return $('body')[0]; }
+		'parent' : ((function(){ return $('body')[0]; })())
 	};
 	
 })()
