@@ -18,7 +18,9 @@ $(document).ready(function(){
 		
 		defered_root: 'charts/',
 		arrived_view: 'charts/charts.arrived.view.js',
-		id: 'charts'
+		id: 'charts',
+		
+		parent:(function(){ return $('body')[0]; })()
 	};
 	
 	compile(context3);

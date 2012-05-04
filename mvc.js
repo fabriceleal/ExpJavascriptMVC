@@ -338,7 +338,8 @@ var cleanCompileWithContainer = function(ctx, container){
 				recursiveWalk(
 						compiled , 
 						function(n){ if(n) return n.inner; return []; }, 
-						function(n){ if(n) n.compilation_afterAppend; else return null; } );
+						function(n){ /**/
+							console.log(n.id); if(n) return n.compilation_afterAppend; else return null; } );
 				//---				
 			}
 
