@@ -15,9 +15,6 @@
 				},
 
 	"compilation_afterAppend" : function(node){
-		var t = function(){return new Date();};
-	
-		console.log(t().toISOString() +'begin compilation_afterAppend');
 		
 		// Load google APIs
 		var googleScript = document.createElement('script');
@@ -25,35 +22,34 @@
 
 		googleScript.onload = 
 				function(){
-					console.log(t().toISOString() + "begin onload callback");
-
-					var tryme = function(){
-						console.log('callback for try-me!');
+					console.log('loaded script');
+				
+					var onLoaded = function(){
+						/*dummy, without this my html gets all broken! >:( */
+						$(function(){
+							// Signal something to someone :|													
+							console.log("$(google.load)!");
+							
+							//$('#chart_div_1').innerText = 'Hello!';
+						});
 					};
 					
-					google.load('visualization', '1.0', {'packages':['corechart'], 'callback' : tryme/**/});
+					google.load('visualization', '1.0', {'packages':['corechart'], 'callback' : onLoaded});
 					google.setOnLoadCallback(function (){
-												console.log(t().toISOString() + "google.setOnLoadCallback!");
-												
-												$('#chart_div_1').innerText = 'Hello!';
-												
 												$(function(){
-													// Signal something to someone :|
-													console.log(t().toISOString() + "$(google.setOnLoadCallback)!");
+													// Signal something to someone :|													
+													console.log("$(google.setOnLoadCallback)!");
+													
+													$('#chart_div_1').innerText = 'Hello!';
 												});											
-											}, true);
+											}, true /*Without this, this wont get called >:( */ );
 					//---
-					/*google.load('visualization', '1.0', {'packages':['corechart']});*/
-					
-					console.log(t().toISOString() +'end onload callback');
+
 				};
 		//---
 
 		googleScript.type = "text/javascript";
 		googleScript.src = "https://www.google.com/jsapi";
-		console.log(t().toISOString() +'end compilation_afterAppend');
-
-		//googleScript.innerText = "(function(){ console.log('hello'); })()"
 
 		return true;
 	}
