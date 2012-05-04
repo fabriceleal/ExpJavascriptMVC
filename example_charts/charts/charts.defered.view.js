@@ -15,6 +15,7 @@
 				},
 
 	"compilation_afterAppend" : function(node){
+		console.log('after append');
 		
 		// Load google APIs
 		var googleScript = document.createElement('script');
@@ -33,8 +34,9 @@
 							//$('#chart_div_1').innerText = 'Hello!';
 						});
 					};
+					var dummy = function(){};
 					
-					google.load('visualization', '1.0', {'packages':['corechart'], 'callback' : onLoaded});
+					google.load('visualization', '1.0', {'packages':['corechart'], 'callback' : dummy/*onLoaded*/});
 					google.setOnLoadCallback(function (){
 												$(function(){
 													// Signal something to someone :|													
