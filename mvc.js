@@ -334,6 +334,7 @@ var cleanCompileWithContainer = function(ctx, container){
 						});
 				//---
 				
+				return;
 				// afterAppend event here
 				recursiveWalk(
 						compiled , 
