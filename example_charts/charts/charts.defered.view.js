@@ -55,7 +55,10 @@
 														var ctx = {
 															data	: "charts/" + child.user_ctx.id + ".json",
 															view	: "charts/charts.arrived.view.js",
-															parent	: $('#' + child.id)[0]
+															parent	: $('#' + child.id)[0],
+															
+															// Complement
+															user_div_id : 'chart_div_' + child.user_ctx.id
 														};
 														console.log('compile for ' + ctx.data);
 														
