@@ -128,15 +128,21 @@ var allOfYouDo = function(obj, fun, ifNullCancel){
  * tree - the start node
  * childrenMethod (currentNode) => (Array nodes|node)
  * execMethod (currentNode) => ((currentNode) => (bool))
+ * argsMethod (currentNode) => (something...)
  */
-var recursiveWalk = function(node, childrenMethod, execMethod){
+var recursiveWalk = function(node, childrenMethod, execMethod, argsMethod){
 	var toExec = execMethod(node);
-	
-	if( !(toExec) || toExec(node) ){
+
+	if(! argsMethod){
+		/* Return the node as-is */
+		argsMethod = function(nd){ return nd;};
+	}
+
+	if( !(toExec) || toExec( argsMethod(node) ) ){
 	
 		allOfYouDo(
 				childrenMethod(node), 
-				function(n){ return recursiveWalk(n, childrenMethod, execMethod); }, 
+				function(n){ return recursiveWalk(n, childrenMethod, execMethod, argsMethod); }, 
 				true);
 		//---
 	}
@@ -338,9 +344,11 @@ var cleanCompileWithContainer = function(ctx, container){
 				// afterAppend event here
 				recursiveWalk(
 						compiled , 
-						function(n){ if(n) return n.inner; return []; }, 
-						function(n){ /**/
-							console.log(n.id); if(n) return n.compilation_afterAppend; else return null; } );
+						function(n){ /* If n is defined, return its inner property, otherwise return an empty seq */
+							if(n) return n.inner; return []; }, 
+						function(n){ /* If n is defined, return its compilation_afterAppend property, otherwise return null */
+							if(n) return n.compilation_afterAppend; return null; },
+						function(n){ /* Return n as-is */ return n;} );
 				//---				
 			}
 

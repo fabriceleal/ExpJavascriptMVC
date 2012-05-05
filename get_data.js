@@ -45,7 +45,9 @@ function getDataEntityRaw(table, id, callback){
 	// How to see if its .json or .js ??? Try both :-| ...	
 	// Only allow one to be successfull though!
 	
-	getDataRaw(url + ".js", function(data){
+	var js = url + ".js", json = url + ".json";
+	
+	getDataRaw(js, function(data){
 		if(called){
 			console.warn('Unexpected call for js (' + url +').');
 			return;
@@ -53,10 +55,10 @@ function getDataEntityRaw(table, id, callback){
 			called = true;
 		}
 		
-		callback(data);
+		callback(data, js);
 	});
 
-	getDataRaw(url + ".json", function(data){
+	getDataRaw(json, function(data){
 		if(called){
 			console.warn('Unexpected call for json (' + url +').');
 			return;
@@ -64,7 +66,7 @@ function getDataEntityRaw(table, id, callback){
 			called = true;
 		}		
 
-		callback(data);
+		callback(data, json);
 	});
 }
 
@@ -85,7 +87,7 @@ function getData(url, callback){
  * Downloads data identified as a tuple table (directory) and id (filename), and compiles.
  */
 function getDataEntity(table, id, callback){
-	getDataEntityRaw(table, id, function(data){
+	getDataEntityRaw(table, id, function(data, url){
 		compileData(data, getMethodByUrl(url), function(compiled){
 			callback(data);
 		});
