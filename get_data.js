@@ -89,7 +89,7 @@ function getData(url, callback){
 function getDataEntity(table, id, callback){
 	getDataEntityRaw(table, id, function(data, url){
 		compileData(data, getMethodByUrl(url), function(compiled){
-			callback(data);
+			callback(compiled);
 		});
 	});
 }
