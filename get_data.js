@@ -11,7 +11,10 @@ function getDataRaw(url, callback){
 	req.onreadystatechange = function(state){
 		if(req.readyState != 4) return;
 		
-		callback(req.responseText);
+		if(req.status == 200){
+			// Don't callback if message != 200 !!!
+			callback(req.responseText);
+		}
 	};
 	try{
 		req.send(null);
@@ -108,7 +111,7 @@ function compileData(data, method, callback){
 			try{
 				var compiled = JSON.parse(raw);
 			}catch(e){
-				throw Error('Error compiling Json data: ' + e);
+				throw Error('Error compiling Json data ('+ data +'): ' + e);
 			}
 
 			// "Return" whatever was compiled.
@@ -129,7 +132,7 @@ function compileData(data, method, callback){
 			try{
 				 compiled = eval('(function(){ return (' + raw +');})()');
 			}catch(e){
-				throw Error('Error compiling Js data: ' + e)
+				throw Error('Error compiling Js data ('+ data +'): ' + e)
 			}
 			
 			// "Return" whatever was compiled.

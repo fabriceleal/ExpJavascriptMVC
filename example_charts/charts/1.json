@@ -1,5 +1,5 @@
 {
-	"title"    : 	"Chart 1",
+	"title"    : 	"Size of codebase by Language",
 
 	"data"     :  	{
 						"table" : "charts_data",
