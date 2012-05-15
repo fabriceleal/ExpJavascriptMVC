@@ -1,0 +1,13 @@
+{
+	"title"    : 	"Size of codebase by Language",
+
+	"data"     :  	{
+						"table" : "charts_data",
+						"id"	: "1"
+					},
+
+	"draw" 	   : 	{
+						"table" : "charts_draw",
+						"id"    : "pie"
+					}
+}
