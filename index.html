@@ -1,31 +1,7 @@
 <html>
 <head id="head">
-<script src="jquery-1.7.2.min.js"></script>
-<script src="extensions.js"></script>
-<script src="get_data.js"></script>
-<script src="mvc.js"></script>
-<script src="uri.js"></script>
 <script>
-
-var context3 = null;
-
-var context_defered = null;
-
-$(document).ready(function(){
-	context3 = {
-		data: 'charts/charts.json',
-		view: 'charts/charts.defered.view.js',
-		
-		defered_root: 'charts/',
-		arrived_view: 'charts/charts.arrived.view.js',
-		id: 'charts',
-		
-		parent:(function(){ return $('body')[0]; })()
-	};
-	
-	compile(context3);
-});
-
+/*
 window.onpopstate = function(event){
 	//console.log('onpopstate');
 	if(event.state){
@@ -33,9 +9,15 @@ window.onpopstate = function(event){
 		cleanCompile(event.state);	
 	}
 }
-
+*/
 </script>
 </head>
 <body id="body">
+Examples that use the 1st version of the framework:<br/>
+<a href="example_posts\posts.html">Example posts</a><br/>
+<a href="example_users\users.html">Example users</a><br/>
+<a href="example_charts\charts.html">Example charts</a><br/>
+Currently at development:
+<a href="example_master\master.html">Example 2.0</a><br/>
 </body>
 </html>

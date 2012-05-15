@@ -1,5 +1,7 @@
 
-
+/**
+ * Decomposes an url into its parts: protocol, directory, resource, parameters
+ */
 function decompose(url){
 	var part1 = url.match("(https?)://(.*)/(.*\.html)?\\??(.*)?");
 	
@@ -37,6 +39,12 @@ function decompose(url){
 	};
 }
 
+/**
+ * Split a filename into a name and an extension. If
+ * the file as a name such as name.and.something.ext, the name
+ * will be assumed to be "name.and.something", and 
+ * the extension only "ext"
+ */
 function splitExtension(someString){
 	var tmp = someString.match("^(.*)\\\.(.*)$");
 	if(tmp){
